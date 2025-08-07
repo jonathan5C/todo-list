@@ -3,9 +3,12 @@ from http import HTTPStatus
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
-from fastapi_zero.schemas import Message
+from fastapi_zero.schemas import Message, UserDB, UserPublic, UserSchema
 
-app = FastAPI(title='Qualquer coisa')
+app = FastAPI(title='API com Fast')
+
+
+database = []
 
 
 @app.get('/', status_code=HTTPStatus.OK, response_model=Message)
@@ -25,3 +28,17 @@ def read_dex():
       </body>
     </html>
     """
+
+
+@app.post('/users/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
+def create_user(user: UserSchema):
+    user_with_id = UserDB(
+        username=user.username,
+        email=user.email,
+        password=user.password,
+        id=len(database) + 1,
+    )
+
+    database.append(user_with_id)
+
+    return user_with_id
